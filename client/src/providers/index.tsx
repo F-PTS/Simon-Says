@@ -1,12 +1,13 @@
 import { ChakraProvider } from "@chakra-ui/react";
 import AppTheme from "./theme/AppTheme";
 import PageProvider from "./PageProvider";
+import RouterProvider from "./RouterProvider";
 
 function Providers() {
     return (
         <ChakraProvider theme={AppTheme}>
             <PageProvider>
-                <h1>temp</h1>
+                <RouterProvider />
             </PageProvider>
         </ChakraProvider>
     );

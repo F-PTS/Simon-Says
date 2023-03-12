@@ -1,6 +1,6 @@
 import { Suspense, lazy } from "react";
 import { Center, Spinner } from "@chakra-ui/react";
-import { Route } from "react-router-dom";
+import { Route, Routes as RouterRoutes } from "react-router-dom";
 
 const NotFound = () => <Center>404 not Found</Center>;
 
@@ -17,16 +17,18 @@ const Routes = () => {
                 </Center>
             }
         >
-            <Route path="/" Component={HomePage} />
-            <Route
-                path="/game/:id"
-                Component={() => (
-                    <GameProvider>
-                        <GameRoom />
-                    </GameProvider>
-                )}
-            />
-            <Route Component={NotFound} />
+            <RouterRoutes>
+                <Route path="/" Component={HomePage} />
+                <Route
+                    path="/game/:id"
+                    Component={() => (
+                        <GameProvider>
+                            <GameRoom />
+                        </GameProvider>
+                    )}
+                />
+                <Route Component={NotFound} />
+            </RouterRoutes>
         </Suspense>
     );
 };
