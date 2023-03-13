@@ -1,3 +1,1 @@
-import PageProvider from "./PageProvider";
-
-export default PageProvider;
+export { PageProvider } from "./PageProvider";

@@ -1,3 +1,1 @@
-import GameRoom from "./GameRoom";
-
-export default GameRoom;
+export { GameRoom as default } from "./GameRoom";

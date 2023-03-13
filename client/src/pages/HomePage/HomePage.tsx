@@ -3,7 +3,7 @@ import { Text, Button, Stack, Box, Container, Flex } from "@chakra-ui/react";
 import { Link, redirect } from "react-router-dom";
 import uniqid from "uniqid";
 
-const HomePage = () => {
+export const HomePage = () => {
     return (
         <Flex justifyContent="center" align="center" flex={1}>
             <Container>
@@ -37,5 +37,3 @@ const HomePage = () => {
         </Flex>
     );
 };
-
-export default HomePage;
