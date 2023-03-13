@@ -1,3 +1,1 @@
-import GameProvider from "./GameProvider";
-
-export default GameProvider;
+export { GameProvider as default } from "./GameProvider";

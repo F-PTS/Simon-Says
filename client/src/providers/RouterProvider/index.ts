@@ -1,3 +1,1 @@
-import RouterProvider from "./RouterProvider";
-
-export default RouterProvider;
+export { RouterProvider } from "./RouterProvider";

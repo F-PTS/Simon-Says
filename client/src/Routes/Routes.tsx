@@ -4,11 +4,11 @@ import { Route, Routes as RouterRoutes } from "react-router-dom";
 
 const NotFound = () => <Center>404 not Found</Center>;
 
-const Routes = () => {
-    const HomePage = lazy(() => import("../pages/HomePages/HomePage"));
-    const GameRoom = lazy(() => import("../pages/GameRoom"));
-    const GameProvider = lazy(() => import("../providers/GameProvider"));
+const HomePage = lazy(() => import("../pages/HomePage"));
+const GameRoom = lazy(() => import("../pages/GameRoom"));
+const GameProvider = lazy(() => import("../providers/GameProvider"));
 
+export const Routes = () => {
     return (
         <Suspense
             fallback={
@@ -32,5 +32,3 @@ const Routes = () => {
         </Suspense>
     );
 };
-
-export default Routes;

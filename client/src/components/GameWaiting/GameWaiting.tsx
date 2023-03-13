@@ -1,7 +1,3 @@
-import React from "react";
-
-const GameWaiting = () => {
+export const GameWaiting = () => {
     return <div>GameWaiting</div>;
 };
-
-export default GameWaiting;

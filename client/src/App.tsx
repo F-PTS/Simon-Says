@@ -1,5 +1,3 @@
-import Providers from "./providers";
+import { Providers } from "./providers";
 
-const App = () => <Providers />;
-
-export default App;
+export const App = () => <Providers />;

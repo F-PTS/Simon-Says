@@ -1,3 +1,1 @@
-import GamePlaying from "./GamePlaying";
-
-export default GamePlaying;
+export { GamePlaying } from "./GamePlaying";
