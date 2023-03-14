@@ -8,5 +8,7 @@ export interface Props {
     setWantRematch: React.Dispatch<React.SetStateAction<boolean>>;
     setRoundCount: React.Dispatch<React.SetStateAction<number>>;
     setPlayerMoves: React.Dispatch<React.SetStateAction<MoveColors[]>>;
+    setOpponentMoves: React.Dispatch<React.SetStateAction<MoveColors[]>>;
+    setPlayerName: React.Dispatch<React.SetStateAction<string>>;
     playRematch: () => void;
 }

@@ -9,6 +9,10 @@ export interface IGameContext {
     roomState: GameRoomState;
     setPlayerMovesHandler: (moves: MoveColors[]) => void;
     playerMoves: MoveColors[];
+    opponentMoves: MoveColors[];
+    playerName: string;
+    setPlayerName: (name: string) => void;
+    opponentName: string;
     isOpponentReady: boolean;
     wantRematch: boolean;
     roundCount: number;
