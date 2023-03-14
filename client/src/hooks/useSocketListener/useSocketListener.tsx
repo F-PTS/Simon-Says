@@ -9,6 +9,8 @@ export function useSocketListener({
     setWantRematch,
     setPlayerMoves,
     playRematch,
+    setOpponentMoves,
+    setPlayerName,
 }: Types.Props) {
     useEffect(() => {
         socket.on("server:error", () => setRoomState(GameRoomState.Error));
@@ -23,5 +25,9 @@ export function useSocketListener({
         socket.on("room:playRematch", () => playRematch);
 
         socket.on("user:playerMoves", (m: MoveColors[]) => setPlayerMoves(m));
+        socket.on("user:opponentMoves", (m: MoveColors[]) =>
+            setOpponentMoves(m)
+        );
+        socket.on("user:setName", (name: string) => setPlayerName(name));
     }, []);
 }
