@@ -4,6 +4,7 @@ import * as Types from "./GameProvider.types";
 import { io } from "socket.io-client";
 import { GameResult, GameRoomState, MoveColors } from "../../shared/enums";
 import { useSocketListener } from "../../hooks/useSocketListener";
+import { Player } from "../../shared/types";
 
 export const GameContext = createContext<Types.IGameContext | null>(null);
 
@@ -17,24 +18,22 @@ export const GameProvider = ({ children }: Types.Props) => {
     const [gameResult, setGameResult] = useState<GameResult>(
         GameResult.Playing
     );
-
+    const [playerMoves, setPlayerMoves] = useState<MoveColors[]>([]);
     const [opponentMoves, setOpponentMoves] = useState<MoveColors[]>([]);
-    const [opponentName, setOpponentName] = useState<string>("");
     const [isOpponentReady, setIsOpponentReady] = useState<boolean>(false);
-
     const socketRef = useRef(
         io(import.meta.env.VITE_BACKEND_URL, { autoConnect: false })
     );
     const socket = socketRef.current;
-    const [playerName, setPlayerName] = useState<string>(socket.id);
-    const [playerMoves, setPlayerMoves] = useState<MoveColors[]>([]);
+    const [opponentNick, setOpponentNick] = useState<string | null>(null);
+    const [username, setUsername] = useState<string>("");
 
     const setPlayerMovesHandler = (moves: MoveColors[]) => {
         socket.emit("user:setMoves", moves);
     };
 
-    const setPlayerNameHandler = (name: string) => {
-        socket.emit("user:setName", name);
+    const handleChangeUsername = (name: string) => {
+        setUsername(name);
     };
 
     const rematch = () => {
@@ -57,9 +56,10 @@ export const GameProvider = ({ children }: Types.Props) => {
         setWantRematch,
         setRoundCount,
         setPlayerMoves,
-        playRematch,
         setOpponentMoves,
-        setPlayerName,
+        setOpponentNick,
+        playRematch,
+        setUsername,
     });
 
     useEffect(() => {
@@ -78,12 +78,13 @@ export const GameProvider = ({ children }: Types.Props) => {
                 setPlayerMovesHandler,
                 playerMoves,
                 opponentMoves,
-                playerName,
-                setPlayerName,
-                opponentName,
                 isOpponentReady,
                 wantRematch,
                 roundCount,
+                socket,
+                opponentNick,
+                username,
+                handleChangeUsername,
             }}
         >
             {children}

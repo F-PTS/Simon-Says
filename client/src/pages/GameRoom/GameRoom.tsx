@@ -8,7 +8,7 @@ import { GameRoomState } from "../../shared/enums";
 
 export function GameRoom() {
     const invitationLink = window.location.href;
-    const { roomState, opponentName, playerName } = useContext(
+    const { roomState, opponentNick, socket, username } = useContext(
         GameContext
     ) as IGameContext;
 
@@ -19,16 +19,18 @@ export function GameRoom() {
             return (
                 <GameWaiting
                     invitationLink={invitationLink}
-                    playersInRoom={[playerName, opponentName]}
+                    opponentNick={opponentNick}
+                    currentUsername={username}
+                    socket={socket}
                 />
             );
         case GameRoomState.Playing:
-            return;
+            return <></>;
         case GameRoomState.Left:
-            return;
+            return <></>;
         case GameRoomState.Full:
-            return;
+            return <></>;
         case GameRoomState.Error:
-            return;
+            return <></>;
     }
 }

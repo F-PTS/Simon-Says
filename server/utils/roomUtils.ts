@@ -13,10 +13,10 @@ export const filterRooms = (
 
 export const findRoomForSocket = (
     gameRooms: GameRoom[],
-    socketId: string
+    socketID: string
 ): GameRoom | undefined => {
     const foundRoom = gameRooms.find(
-        (x) => x.host === socketId || x.opponent === socketId
+        (x) => x.host.socketID === socketID || x.opponent?.socketID === socketID
     );
 
     return foundRoom;
