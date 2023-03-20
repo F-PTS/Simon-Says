@@ -2,7 +2,7 @@ import { Flex, Stack, Text } from "@chakra-ui/react";
 import { useParams } from "react-router-dom";
 import { SimonSaysBoxes } from "../../components/SimonSaysBoxes";
 
-export const GameRoom = () => {
+export const GamePlaying = () => {
     const { id } = useParams();
 
     return (

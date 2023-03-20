@@ -20,15 +20,27 @@ export const GameWaiting = ({
     opponentNick,
     currentUsername,
     socket,
+    isOpponentReady,
 }: Types.Props) => {
     const { onCopy, hasCopied } = useClipboard(invitationLink);
     const toast = useToast();
     const [username, setUsername] = useState<string>();
+    const [isReady, setIsReady] = useState<boolean>(false);
 
     const handleNickChange = () => {
         if (!username) {
             toast({
                 title: "NickName cannot be empty",
+                status: "error",
+                duration: 3000,
+                isClosable: true,
+            });
+            return;
+        }
+
+        if (opponentNick && opponentNick === username) {
+            toast({
+                title: "Nick is already taken",
                 status: "error",
                 duration: 3000,
                 isClosable: true,
@@ -47,6 +59,17 @@ export const GameWaiting = ({
         }
 
         socket.emit("user:setName", username);
+    };
+
+    const handleReadyToggle = () => {
+        setIsReady((current) => !current);
+        socket.emit("user:setReady");
+    };
+
+    const handleStartGame = () => {
+        const readyTuple: [boolean, boolean] = [isReady, isOpponentReady];
+        console.log(readyTuple);
+        socket.emit("room:startGame", readyTuple);
     };
 
     return (
@@ -93,6 +116,7 @@ export const GameWaiting = ({
                     </Flex>
 
                     <Input
+                        disabled={isReady}
                         placeholder="Nickname"
                         colorScheme={"green"}
                         size="md"
@@ -105,6 +129,30 @@ export const GameWaiting = ({
                     >
                         Change nickname
                     </Button>
+
+                    <Flex justifyContent={"space-around"} alignItems="center">
+                        <Button
+                            size={"sm"}
+                            variant="ghost"
+                            onClick={handleReadyToggle}
+                            colorScheme={isReady ? "green" : "red"}
+                        >
+                            {currentUsername} {isReady ? "" : "not"} ready
+                        </Button>
+
+                        <Text
+                            fontSize={"sm"}
+                            fontWeight="medium"
+                            color={isOpponentReady ? "green.200" : "red.200"}
+                        >
+                            {opponentNick} {isOpponentReady ? "" : "not"} ready
+                        </Text>
+                    </Flex>
+                    {isOpponentReady && isReady && (
+                        <Button onClick={handleStartGame} colorScheme={"green"}>
+                            Play!
+                        </Button>
+                    )}
                 </Stack>
             </Container>
         </Flex>

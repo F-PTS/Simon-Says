@@ -6,4 +6,5 @@ export interface Props {
     opponentNick: string | null;
     socket: Socket;
     currentUsername: string;
+    isOpponentReady: boolean;
 }

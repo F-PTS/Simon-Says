@@ -20,15 +20,20 @@ export function useSocketListener({
         socket.on("room:setOpponentNick", (newNickName: string) =>
             setOpponentNick(newNickName)
         );
+
         socket.on("room:setUsername", (username: string) =>
             setUsername(username)
         );
+
         socket.on("room:create", () => setRoomState(GameRoomState.Waiting));
-        socket.on("room:full", () => "");
+        // socket.on("room:full", () => setRoomState(GameRoomState.Full));
         socket.on("room:left", () => setRoomState(GameRoomState.Left));
         socket.on("room:blocked", () => setRoomState(GameRoomState.Full));
+        socket.on("room:start", () => setRoomState(GameRoomState.Playing));
 
-        socket.on("room:opponentReady", () => setIsOpponentReady(true));
+        socket.on("room:setOpponentReady", () =>
+            setIsOpponentReady((current) => !current)
+        );
 
         socket.on("room:wantRematch", () => setWantRematch(true));
         socket.on("room:playRematch", () => playRematch());

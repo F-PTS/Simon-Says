@@ -79,8 +79,36 @@ io.on("connection", (socket) => {
         if (filter.isProfane(username)) return;
 
         socket.emit("room:setUsername", username);
-        socket.broadcast.emit("room:setOpponentNick", username);
+        socket.broadcast
+            .to(foundRoom.roomID)
+            .emit("room:setOpponentNick", username);
     });
+
+    socket.on("user:setReady", () => {
+        const foundRoom = findRoomForSocket(gameRooms, socket.id);
+        if (!foundRoom) return;
+
+        socket.broadcast.to(foundRoom.roomID).emit("room:setOpponentReady");
+    });
+
+    socket.on(
+        "room:startGame",
+        ([isReady, isOpponentReady]: [boolean, boolean]) => {
+            console.log("i recieve readyness");
+
+            const foundRoom = findRoomForSocket(gameRooms, socket.id);
+            console.log("i tried to find room");
+            if (!foundRoom) return;
+
+            console.log("i found room and I check if they are ready");
+            if (!isReady && !isOpponentReady) return;
+            console.log("they are. I am sending back emits");
+
+            socket.emit("room:start");
+            socket.broadcast.emit("room:start");
+            console.log("should be playing");
+        }
+    );
 });
 
 io.of("/").adapter.on("leave-room", (roomID, id) => {
