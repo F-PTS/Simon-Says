@@ -1,11 +1,10 @@
 import Filter from "bad-words";
 import * as dotenv from "dotenv";
 import { createServer } from "http";
-import { shallowEqualArrays } from "shallow-equal";
 import { Server } from "socket.io";
 import { MoveColors, PlayerRoles } from "./shared/enums";
 import { GameRoom } from "./shared/types";
-import { findRoomForSocket } from "./utils/roomUtils";
+import { filterRooms, findRoomForSocket } from "./utils/roomUtils";
 
 dotenv.config();
 
@@ -33,7 +32,6 @@ io.on("connection", (socket) => {
                     host: { socketID: socket.id, username: socket.id },
                     hostMoves: [],
                     opponentMoves: [],
-                    rematch: "",
                 },
             ];
 
@@ -100,7 +98,7 @@ io.on("connection", (socket) => {
 
             if (!isReady && !isOpponentReady) return;
 
-            socket.emit("user:setPlayerRole", PlayerRoles.choosingNewColor);
+            socket.emit("user:setPlayerRole", PlayerRoles.playing);
             socket.broadcast
                 .to(foundRoom.roomID)
                 .emit("user:setPlayerRole", PlayerRoles.waiting);
@@ -114,50 +112,129 @@ io.on("connection", (socket) => {
         console.log(`socekt ${socket.id} made a ${move} move`);
 
         const foundRoom = findRoomForSocket(gameRooms, socket.id);
+
         if (!foundRoom) return;
         if (!foundRoom.opponent) return;
 
-        if (foundRoom.host.socketID === socket.id)
-            foundRoom.hostMoves = [...foundRoom.hostMoves, move];
-
         if (foundRoom.opponent.socketID === socket.id) {
             foundRoom.opponentMoves = [...foundRoom.opponentMoves, move];
+
+            if (
+                foundRoom.hostMoves.length !== 0 &&
+                foundRoom.hostMoves.length >= foundRoom.opponentMoves.length &&
+                !foundRoom.opponentMoves.every(
+                    (move, id) => move === foundRoom.hostMoves[id]
+                )
+            ) {
+                console.log(`socket ${socket.id} własnie przegrał :(`);
+
+                socket.emit("room:end", false);
+                socket.broadcast.to(foundRoom.roomID).emit("room:end", true);
+
+                return;
+            }
+
+            if (foundRoom.hostMoves.length < foundRoom.opponentMoves.length) {
+                socket.emit("user:setPlayerRole", PlayerRoles.waiting);
+                socket.emit("user:playerMoves", foundRoom.opponentMoves);
+
+                socket.broadcast
+                    .to(foundRoom.roomID)
+                    .emit("user:setPlayerRole", PlayerRoles.playing);
+                socket.broadcast
+                    .to(foundRoom.roomID)
+                    .emit("user:playerMoves", foundRoom.opponentMoves);
+
+                foundRoom.hostMoves = [];
+
+                gameRooms = gameRooms.map((room) => {
+                    if (foundRoom.roomID === room.roomID) return foundRoom;
+                    return room;
+                });
+            }
         }
 
-        if (
-            foundRoom.hostMoves.length === foundRoom.opponentMoves.length &&
-            !shallowEqualArrays(foundRoom.hostMoves, foundRoom.opponentMoves)
-        ) {
-            socket.emit("room:end", false);
-            console.log(`socekt ${socket.id} just lost :(`);
-            return;
+        if (foundRoom.host.socketID === socket.id) {
+            foundRoom.hostMoves = [...foundRoom.hostMoves, move];
+
+            if (
+                foundRoom.opponentMoves.length !== 0 &&
+                foundRoom.hostMoves.length <= foundRoom.opponentMoves.length &&
+                !foundRoom.hostMoves.every(
+                    (move, id) => move === foundRoom.opponentMoves[id]
+                )
+            ) {
+                console.log(`socket ${socket.id} własnie przegrał :(`);
+
+                socket.emit("room:end", false);
+                socket.broadcast.to(foundRoom.roomID).emit("room:end", true);
+
+                return;
+            }
+            if (foundRoom.hostMoves.length > foundRoom.opponentMoves.length) {
+                socket.emit("user:setPlayerRole", PlayerRoles.waiting);
+                socket.emit("user:playerMoves", foundRoom.hostMoves);
+
+                socket.broadcast
+                    .to(foundRoom.roomID)
+                    .emit("user:setPlayerRole", PlayerRoles.playing);
+                socket.broadcast
+                    .to(foundRoom.roomID)
+                    .emit("user:playerMoves", foundRoom.hostMoves);
+
+                foundRoom.opponentMoves = [];
+
+                gameRooms = gameRooms.map((room) => {
+                    if (foundRoom.roomID === room.roomID) return foundRoom;
+                    return room;
+                });
+            }
         }
+
+        socket.broadcast.to(foundRoom.roomID).emit("room:sendBackMove", move);
+
+        setTimeout(() => {
+            socket.broadcast
+                .to(foundRoom.roomID)
+                .emit("room:sendBackMove", null);
+        }, 450);
+
+        console.log(foundRoom);
+    });
+
+    socket.on("room:rematch", () => {
+        const foundRoom = findRoomForSocket(gameRooms, socket.id);
+
+        if (!foundRoom) return;
+        if (!foundRoom.opponent) return;
+
+        foundRoom.hostMoves = [];
+        foundRoom.opponentMoves = [];
 
         gameRooms = gameRooms.map((room) => {
-            if (room.roomID === foundRoom.roomID) {
-                return foundRoom;
-            }
+            if (foundRoom.roomID === room.roomID) return foundRoom;
             return room;
         });
 
-        socket.emit("user:playerMoves", foundRoom.opponentMoves);
-        socket.emit("user:setPlayerRole", PlayerRoles.waiting);
-
-        socket.broadcast
-            .to(foundRoom.roomID)
-            .emit("user:opponentMoves", foundRoom.opponentMoves);
-
-        socket.broadcast
-            .to(foundRoom.roomID)
-            .emit("user:setPlayerRole", PlayerRoles.repeating);
-
-        console.log(foundRoom);
-        return;
+        console.log(
+            `players ${foundRoom.host.socketID} and ${foundRoom.opponent.socketID} play rematch!`
+        );
     });
 });
 
 io.of("/").adapter.on("leave-room", (roomID, id) => {
     if (roomID !== id) {
         io.to(roomID).emit("room:left");
+    }
+});
+
+io.of("/").adapter.on("delete-room", (roomId: string) => {
+    const foundRoom = gameRooms.find((room) => room.roomID === roomId);
+    if (foundRoom) {
+        gameRooms = gameRooms.filter((x) =>
+            filterRooms(x, foundRoom.roomID, () => {
+                console.log(`room ${foundRoom.roomID} was deleted`);
+            })
+        );
     }
 });

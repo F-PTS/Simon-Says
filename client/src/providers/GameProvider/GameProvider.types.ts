@@ -10,18 +10,14 @@ export interface Props {
 export interface IGameContext {
     roomState: GameRoomState;
     addPlayerMove: (move: MoveColors) => void;
-    playerMoves: MoveColors[];
-    opponentMoves: MoveColors[];
     isOpponentReady: boolean;
     opponentNick: string | null;
     roundCount: number;
-    wantRematch: boolean;
     socket: Socket;
     username: string;
     handleChangeUsername: (nick: string) => void;
     playRematch: () => void;
-    handleChangeRoundCount: () => void;
     playerRole: React.MutableRefObject<PlayerRoles | undefined>;
-    handleChangePlayerRole: (newRole: PlayerRoles) => void;
     gameResult: "Playing" | "Win" | "Lose";
+    activeButtonColor: MoveColors | null;
 }

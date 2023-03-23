@@ -2,10 +2,10 @@ import { GameRoom } from "../shared/types";
 
 export const filterRooms = (
     gameRoom: GameRoom,
-    roomID: string,
+    roomId: string,
     callback: () => void
 ) => {
-    const result = gameRoom.roomID !== roomID;
+    const result = gameRoom.roomID !== roomId;
     if (!result) callback();
 
     return result;

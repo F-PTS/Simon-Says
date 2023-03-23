@@ -6,7 +6,6 @@ export interface GameRoom {
     opponent?: Player;
     hostMoves: MoveColors[];
     opponentMoves: MoveColors[];
-    rematch: string;
 }
 
 export type Player = {

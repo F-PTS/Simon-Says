@@ -14,15 +14,11 @@ export function GameRoom() {
         socket,
         username,
         isOpponentReady,
-        wantRematch,
+        activeButtonColor,
         roundCount,
-        opponentMoves,
-        playerMoves,
         addPlayerMove,
-        handleChangeRoundCount,
         playRematch,
         playerRole,
-        handleChangePlayerRole,
         gameResult,
     } = useContext(GameContext) as IGameContext;
 
@@ -42,19 +38,12 @@ export function GameRoom() {
         case GameRoomState.Playing:
             return (
                 <GamePlaying
-                    opponentNick={opponentNick}
-                    currentUsername={username}
-                    socket={socket}
-                    wantRematch={wantRematch}
                     roundCount={roundCount}
-                    opponentMoves={opponentMoves}
-                    playerMoves={playerMoves}
                     addPlayerMove={addPlayerMove}
                     playRematch={playRematch}
-                    handleChangeRoundCount={handleChangeRoundCount}
                     playerRole={playerRole}
-                    handleChangePlayerRole={handleChangePlayerRole}
                     gameResult={gameResult}
+                    activeButtonColor={activeButtonColor}
                 />
             );
         case GameRoomState.Left:

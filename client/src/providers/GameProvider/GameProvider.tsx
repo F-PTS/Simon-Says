@@ -13,13 +13,10 @@ export const GameProvider = ({ children }: Types.Props) => {
     const [roomState, setRoomState] = useState<GameRoomState>(
         GameRoomState.Waiting
     );
-    const [wantRematch, setWantRematch] = useState<boolean>(false);
     const [roundCount, setRoundCount] = useState<number>(0);
     const [gameResult, setGameResult] = useState<GameResult>(
         GameResult.Playing
     );
-    const [playerMoves, setPlayerMoves] = useState<MoveColors[]>([]);
-    const [opponentMoves, setOpponentMoves] = useState<MoveColors[]>([]);
     const [isOpponentReady, setIsOpponentReady] = useState<boolean>(false);
     const socketRef = useRef(
         io(import.meta.env.VITE_BACKEND_URL, { autoConnect: false })
@@ -28,6 +25,8 @@ export const GameProvider = ({ children }: Types.Props) => {
     const [opponentNick, setOpponentNick] = useState<string | null>(null);
     const [username, setUsername] = useState<string>("");
     const playerRole = useRef<PlayerRoles>();
+    const [activeButtonColor, setActiveButtonColor] =
+        useState<MoveColors | null>(null);
 
     const addPlayerMove = (move: MoveColors) => {
         socket.emit("user:addPlayerMove", move);
@@ -37,23 +36,13 @@ export const GameProvider = ({ children }: Types.Props) => {
         playerRole.current = newRole;
     };
 
-    const handleChangeRoundCount = () => {
-        setRoundCount((current) => current + 1);
-    };
-
     const handleChangeUsername = (name: string) => {
         setUsername(name);
     };
 
-    const askForRematch = () => {
-        setWantRematch(true);
-    };
-
     const playRematch = () => {
         setGameResult(GameResult.Playing);
-        setPlayerMoves([]);
         setIsOpponentReady(false);
-        setWantRematch(false);
         setRoundCount(0);
         socket.emit("room:rematch");
     };
@@ -62,15 +51,13 @@ export const GameProvider = ({ children }: Types.Props) => {
         socket,
         setRoomState,
         setIsOpponentReady,
-        setWantRematch,
         setRoundCount,
-        setPlayerMoves,
-        setOpponentMoves,
         setOpponentNick,
         playRematch,
         setUsername,
         handleChangePlayerRole,
         setGameResult,
+        setActiveButtonColor,
     });
 
     useEffect(() => {
@@ -87,20 +74,16 @@ export const GameProvider = ({ children }: Types.Props) => {
             value={{
                 roomState,
                 addPlayerMove,
-                playerMoves,
-                opponentMoves,
                 isOpponentReady,
-                wantRematch,
                 roundCount,
                 socket,
                 opponentNick,
                 username,
                 handleChangeUsername,
                 playRematch,
-                handleChangeRoundCount,
                 playerRole,
-                handleChangePlayerRole,
                 gameResult,
+                activeButtonColor,
             }}
         >
             {children}

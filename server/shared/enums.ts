@@ -7,10 +7,8 @@ export const MoveColors = {
 
 export type MoveColors = keyof typeof MoveColors;
 
-
 export const PlayerRoles = {
-    choosingNewColor: "choosingNewColor",
-    repeating: "repeating",
+    playing: "playing",
     waiting: "waiting",
 } as const;
 
