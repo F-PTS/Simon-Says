@@ -1,1 +1,0 @@
-export { SimonSaysBoxes } from "./SimonSaysBoxes";

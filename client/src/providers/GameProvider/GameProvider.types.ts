@@ -1,5 +1,7 @@
 import React from "react";
+import { Socket } from "socket.io-client";
 import { GameRoomState, MoveColors } from "../../shared/enums";
+import { PlayerRoles } from "../../shared/types";
 
 export interface Props {
     children: React.ReactNode;
@@ -7,13 +9,15 @@ export interface Props {
 
 export interface IGameContext {
     roomState: GameRoomState;
-    setPlayerMovesHandler: (moves: MoveColors[]) => void;
-    playerMoves: MoveColors[];
-    opponentMoves: MoveColors[];
-    playerName: string;
-    setPlayerName: (name: string) => void;
-    opponentName: string;
+    addPlayerMove: (move: MoveColors) => void;
     isOpponentReady: boolean;
-    wantRematch: boolean;
+    opponentNick: string | null;
     roundCount: number;
+    socket: Socket;
+    username: string;
+    handleChangeUsername: (nick: string) => void;
+    playRematch: () => void;
+    playerRole: React.MutableRefObject<PlayerRoles | undefined>;
+    gameResult: "Playing" | "Win" | "Lose";
+    activeButtonColor: MoveColors | null;
 }
