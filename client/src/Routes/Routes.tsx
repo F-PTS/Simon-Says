@@ -9,26 +9,26 @@ const GameRoom = lazy(() => import("../pages/GameRoom"));
 const GameProvider = lazy(() => import("../providers/GameProvider"));
 
 export const Routes = () => {
-    return (
-        <Suspense
-            fallback={
-                <Center>
-                    <Spinner />
-                </Center>
-            }
-        >
-            <RouterRoutes>
-                <Route path="/" Component={HomePage} />
-                <Route
-                    path="/game/:id"
-                    Component={() => (
-                        <GameProvider>
-                            <GameRoom />
-                        </GameProvider>
-                    )}
-                />
-                <Route Component={NotFound} />
-            </RouterRoutes>
-        </Suspense>
-    );
+  return (
+    <Suspense
+      fallback={
+        <Center>
+          <Spinner />
+        </Center>
+      }
+    >
+      <RouterRoutes>
+        <Route path="/" Component={HomePage} />
+        <Route
+          path="/game/:id"
+          Component={() => (
+            <GameProvider>
+              <GameRoom />
+            </GameProvider>
+          )}
+        />
+        <Route Component={NotFound} />
+      </RouterRoutes>
+    </Suspense>
+  );
 };

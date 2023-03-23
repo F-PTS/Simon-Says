@@ -1,6 +1,6 @@
 import { Socket } from "socket.io-client";
-import { GameResult, GameRoomState, MoveColors } from "../../shared/enums";
-import { Player } from "../../shared/types";
+import { GameRoomState, MoveColors } from "../../shared/enums";
+import { PlayerRoles } from "../../shared/types";
 
 export interface Props {
     socket: Socket;
@@ -12,5 +12,9 @@ export interface Props {
     setOpponentMoves: React.Dispatch<React.SetStateAction<MoveColors[]>>;
     setOpponentNick: React.Dispatch<React.SetStateAction<string | null>>;
     setUsername: React.Dispatch<React.SetStateAction<string>>;
+    handleChangePlayerRole: (newRole: PlayerRoles) => void;
     playRematch: () => void;
+    setGameResult: React.Dispatch<
+        React.SetStateAction<"Playing" | "Win" | "Lose">
+    >;
 }

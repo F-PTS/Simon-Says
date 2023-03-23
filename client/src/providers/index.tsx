@@ -4,11 +4,11 @@ import { PageProvider } from "./PageProvider";
 import { RouterProvider } from "./RouterProvider";
 
 export function Providers() {
-    return (
-        <ChakraProvider theme={theme}>
-            <PageProvider>
-                <RouterProvider />
-            </PageProvider>
-        </ChakraProvider>
-    );
+  return (
+    <ChakraProvider theme={theme}>
+      <PageProvider>
+        <RouterProvider />
+      </PageProvider>
+    </ChakraProvider>
+  );
 }

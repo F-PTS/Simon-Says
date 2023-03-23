@@ -1,12 +1,11 @@
-import { createServer } from "http";
-import { MoveColors } from "./shared/enums";
-import { Server } from "socket.io";
-import * as roomUtils from "./utils/roomUtils";
-import { GameRoom } from "./shared/types";
-import * as dotenv from "dotenv";
-import { findRoomForSocket } from "./utils/roomUtils";
 import Filter from "bad-words";
-import { Player } from "./shared/types";
+import * as dotenv from "dotenv";
+import { createServer } from "http";
+import { shallowEqualArrays } from "shallow-equal";
+import { Server } from "socket.io";
+import { MoveColors, PlayerRoles } from "./shared/enums";
+import { GameRoom } from "./shared/types";
+import { findRoomForSocket } from "./utils/roomUtils";
 
 dotenv.config();
 
@@ -78,6 +77,8 @@ io.on("connection", (socket) => {
         const filter = new Filter();
         if (filter.isProfane(username)) return;
 
+        console.log(gameRooms);
+
         socket.emit("room:setUsername", username);
         socket.broadcast
             .to(foundRoom.roomID)
@@ -94,21 +95,65 @@ io.on("connection", (socket) => {
     socket.on(
         "room:startGame",
         ([isReady, isOpponentReady]: [boolean, boolean]) => {
-            console.log("i recieve readyness");
-
             const foundRoom = findRoomForSocket(gameRooms, socket.id);
-            console.log("i tried to find room");
             if (!foundRoom) return;
 
-            console.log("i found room and I check if they are ready");
             if (!isReady && !isOpponentReady) return;
-            console.log("they are. I am sending back emits");
+
+            socket.emit("user:setPlayerRole", PlayerRoles.choosingNewColor);
+            socket.broadcast
+                .to(foundRoom.roomID)
+                .emit("user:setPlayerRole", PlayerRoles.waiting);
 
             socket.emit("room:start");
-            socket.broadcast.emit("room:start");
-            console.log("should be playing");
+            socket.broadcast.to(foundRoom.roomID).emit("room:start");
         }
     );
+
+    socket.on("user:addPlayerMove", (move: MoveColors) => {
+        console.log(`socekt ${socket.id} made a ${move} move`);
+
+        const foundRoom = findRoomForSocket(gameRooms, socket.id);
+        if (!foundRoom) return;
+        if (!foundRoom.opponent) return;
+
+        if (foundRoom.host.socketID === socket.id)
+            foundRoom.hostMoves = [...foundRoom.hostMoves, move];
+
+        if (foundRoom.opponent.socketID === socket.id) {
+            foundRoom.opponentMoves = [...foundRoom.opponentMoves, move];
+        }
+
+        if (
+            foundRoom.hostMoves.length === foundRoom.opponentMoves.length &&
+            !shallowEqualArrays(foundRoom.hostMoves, foundRoom.opponentMoves)
+        ) {
+            socket.emit("room:end", false);
+            console.log(`socekt ${socket.id} just lost :(`);
+            return;
+        }
+
+        gameRooms = gameRooms.map((room) => {
+            if (room.roomID === foundRoom.roomID) {
+                return foundRoom;
+            }
+            return room;
+        });
+
+        socket.emit("user:playerMoves", foundRoom.opponentMoves);
+        socket.emit("user:setPlayerRole", PlayerRoles.waiting);
+
+        socket.broadcast
+            .to(foundRoom.roomID)
+            .emit("user:opponentMoves", foundRoom.opponentMoves);
+
+        socket.broadcast
+            .to(foundRoom.roomID)
+            .emit("user:setPlayerRole", PlayerRoles.repeating);
+
+        console.log(foundRoom);
+        return;
+    });
 });
 
 io.of("/").adapter.on("leave-room", (roomID, id) => {

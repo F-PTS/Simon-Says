@@ -1,10 +1,10 @@
-import React, { createContext, useEffect, useRef, useState } from "react";
+import { createContext, useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import * as Types from "./GameProvider.types";
 import { io } from "socket.io-client";
-import { GameResult, GameRoomState, MoveColors } from "../../shared/enums";
 import { useSocketListener } from "../../hooks/useSocketListener";
-import { Player } from "../../shared/types";
+import { GameResult, GameRoomState, MoveColors } from "../../shared/enums";
+import { PlayerRoles } from "../../shared/types";
+import * as Types from "./GameProvider.types";
 
 export const GameContext = createContext<Types.IGameContext | null>(null);
 
@@ -27,18 +27,26 @@ export const GameProvider = ({ children }: Types.Props) => {
     const socket = socketRef.current;
     const [opponentNick, setOpponentNick] = useState<string | null>(null);
     const [username, setUsername] = useState<string>("");
+    const playerRole = useRef<PlayerRoles>();
 
-    const setPlayerMovesHandler = (moves: MoveColors[]) => {
-        socket.emit("user:setMoves", moves);
+    const addPlayerMove = (move: MoveColors) => {
+        socket.emit("user:addPlayerMove", move);
+    };
+
+    const handleChangePlayerRole = (newRole: PlayerRoles) => {
+        playerRole.current = newRole;
+    };
+
+    const handleChangeRoundCount = () => {
+        setRoundCount((current) => current + 1);
     };
 
     const handleChangeUsername = (name: string) => {
         setUsername(name);
     };
 
-    const rematch = () => {
+    const askForRematch = () => {
         setWantRematch(true);
-        socket.emit("room:rematch");
     };
 
     const playRematch = () => {
@@ -47,6 +55,7 @@ export const GameProvider = ({ children }: Types.Props) => {
         setIsOpponentReady(false);
         setWantRematch(false);
         setRoundCount(0);
+        socket.emit("room:rematch");
     };
 
     useSocketListener({
@@ -60,6 +69,8 @@ export const GameProvider = ({ children }: Types.Props) => {
         setOpponentNick,
         playRematch,
         setUsername,
+        handleChangePlayerRole,
+        setGameResult,
     });
 
     useEffect(() => {
@@ -75,7 +86,7 @@ export const GameProvider = ({ children }: Types.Props) => {
         <GameContext.Provider
             value={{
                 roomState,
-                setPlayerMovesHandler,
+                addPlayerMove,
                 playerMoves,
                 opponentMoves,
                 isOpponentReady,
@@ -85,6 +96,11 @@ export const GameProvider = ({ children }: Types.Props) => {
                 opponentNick,
                 username,
                 handleChangeUsername,
+                playRematch,
+                handleChangeRoundCount,
+                playerRole,
+                handleChangePlayerRole,
+                gameResult,
             }}
         >
             {children}

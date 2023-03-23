@@ -1,6 +1,5 @@
-import React from "react";
-import { Text, Button, Stack, Box, Container, Flex } from "@chakra-ui/react";
-import { Link, redirect } from "react-router-dom";
+import { Button, Container, Flex, Stack, Text } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
 import uniqid from "uniqid";
 
 export const HomePage = () => {
