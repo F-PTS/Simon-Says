@@ -13,6 +13,7 @@ export function useSocketListener({
     handleChangePlayerRole,
     setGameResult,
     setActiveButtonColor,
+    setRoundCount,
 }: Types.Props) {
     useEffect(() => {
         socket.on("room:setOpponentNick", (newNickName: string) =>
@@ -41,6 +42,9 @@ export function useSocketListener({
 
         socket.on("user:setPlayerRole", (newRole: PlayerRoles) =>
             handleChangePlayerRole(newRole)
+        );
+        socket.on("room:addRoundCount", () =>
+            setRoundCount((current) => current + 1)
         );
 
         return () => {

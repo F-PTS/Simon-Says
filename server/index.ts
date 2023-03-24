@@ -41,7 +41,7 @@ io.on("connection", (socket) => {
             return;
         }
 
-        if (foundRoom.opponent) {
+        if (foundRoom.opponent && foundRoom.opponent.socketID !== socket.id) {
             socket.emit("room:full");
             return;
         }
@@ -145,7 +145,15 @@ io.on("connection", (socket) => {
                     .to(foundRoom.roomID)
                     .emit("user:playerMoves", foundRoom.opponentMoves);
 
+
+                    socket.emit("room:addRoundCount");
+                    socket.broadcast
+                        .to(foundRoom.roomID)
+                        .emit("room:addRoundCount");
+
                 foundRoom.hostMoves = [];
+
+                
 
                 gameRooms = gameRooms.map((room) => {
                     if (foundRoom.roomID === room.roomID) return foundRoom;
