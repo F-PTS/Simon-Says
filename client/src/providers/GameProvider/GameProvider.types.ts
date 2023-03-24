@@ -17,7 +17,7 @@ export interface IGameContext {
     username: string;
     handleChangeUsername: (nick: string) => void;
     playRematch: () => void;
-    playerRole: React.MutableRefObject<PlayerRoles | undefined>;
+    playerRole: PlayerRoles | null;
     gameResult: "Playing" | "Win" | "Lose";
     activeButtonColor: MoveColors | null;
 }

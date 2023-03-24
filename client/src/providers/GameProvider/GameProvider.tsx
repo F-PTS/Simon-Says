@@ -24,7 +24,7 @@ export const GameProvider = ({ children }: Types.Props) => {
     const socket = socketRef.current;
     const [opponentNick, setOpponentNick] = useState<string | null>(null);
     const [username, setUsername] = useState<string>("");
-    const playerRole = useRef<PlayerRoles>();
+    const [playerRole, setPlayerRole] = useState<PlayerRoles | null>(null);
     const [activeButtonColor, setActiveButtonColor] =
         useState<MoveColors | null>(null);
 
@@ -33,7 +33,7 @@ export const GameProvider = ({ children }: Types.Props) => {
     };
 
     const handleChangePlayerRole = (newRole: PlayerRoles) => {
-        playerRole.current = newRole;
+        setPlayerRole(newRole);
     };
 
     const handleChangeUsername = (name: string) => {

@@ -3,4 +3,9 @@ export type Player = {
     customNick?: string;
 };
 
-export type PlayerRoles = "choosingNewColor" | "repeating" | "waiting";
+export const PlayerRoles = {
+    playing: "playing",
+    waiting: "waiting",
+} as const;
+
+export type PlayerRoles = keyof typeof PlayerRoles;
