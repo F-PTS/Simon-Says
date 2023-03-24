@@ -1,0 +1,1 @@
+export { GameWaiting } from "./GameWaiting";
