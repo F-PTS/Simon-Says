@@ -5,7 +5,7 @@ export interface Props {
     playRematch: () => void;
     addPlayerMove: (move: MoveColors) => void;
     roundCount: number;
-    playerRole: React.MutableRefObject<PlayerRoles | undefined>;
+    playerRole: PlayerRoles | null;
     gameResult: GameResult;
     activeButtonColor: MoveColors | null;
 }

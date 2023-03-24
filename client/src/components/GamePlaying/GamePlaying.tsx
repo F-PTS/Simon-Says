@@ -18,7 +18,7 @@ export const GamePlaying = ({
         >
             {gameResult === "Playing" && (
                 <>
-                    <Text fontSize={"4xl"}>{playerRole.current}</Text>
+                    <Text fontSize={"4xl"}>{playerRole}</Text>
 
                     <SimpleGrid columns={2} spacing={4}>
                         <Button
@@ -27,7 +27,7 @@ export const GamePlaying = ({
                             colorScheme="red"
                             variant="solid"
                             onClick={() => addPlayerMove("Red")}
-                            isDisabled={playerRole.current === "waiting"}
+                            isDisabled={playerRole === "waiting"}
                             backgroundColor={
                                 activeButtonColor === "Red" ? "red.600" : ""
                             }
@@ -38,7 +38,7 @@ export const GamePlaying = ({
                             colorScheme="green"
                             variant="solid"
                             onClick={() => addPlayerMove("Green")}
-                            isDisabled={playerRole.current === "waiting"}
+                            isDisabled={playerRole === "waiting"}
                             backgroundColor={
                                 activeButtonColor === "Green" ? "green.700" : ""
                             }
@@ -49,7 +49,7 @@ export const GamePlaying = ({
                             colorScheme="blue"
                             variant="solid"
                             onClick={() => addPlayerMove("Blue")}
-                            isDisabled={playerRole.current === "waiting"}
+                            isDisabled={playerRole === "waiting"}
                             backgroundColor={
                                 activeButtonColor === "Blue" ? "blue.600" : ""
                             }
@@ -60,7 +60,7 @@ export const GamePlaying = ({
                             colorScheme="yellow"
                             variant="solid"
                             onClick={() => addPlayerMove("Yellow")}
-                            isDisabled={playerRole.current === "waiting"}
+                            isDisabled={playerRole === "waiting"}
                             backgroundColor={
                                 activeButtonColor === "Yellow"
                                     ? "yellow.600"
